@@ -14,8 +14,8 @@ public class ContractServiceImpl implements ContractService {
 	@Autowired
 	ContractDao cdao;
 	@Override
-	public Contract getContract(String contractNumber) {
-		return cdao.findById(contractNumber).get();
+	public Optional<Contract> getContract(String contractNumber) {
+		return cdao.findById(contractNumber);
 	}
 
 	@Override

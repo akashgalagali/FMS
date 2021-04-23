@@ -9,7 +9,7 @@ import com.cg.fms.dto.Contract;
 @Service
 public interface ContractService {
 	
-	public Contract getContract(String contractNumber);
+	public Optional<Contract> getContract(String contractNumber);
 	public Contract addContract(Contract contract);
 	public Contract updateContract(Contract contract);
 	public void deleteContract(String contractNumber);

@@ -1,9 +1,16 @@
 package com.cg.fms.dto;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+
 
 //public class Customer{
 //	private String customerId;
@@ -35,16 +42,23 @@ public class Customer{
 	private String customerPostalCode;
 	@Column(name="customer_contact")
 	private String customerContact;
+	
 	@OneToOne(mappedBy="customerId")
 	Orders order;
 	@OneToOne(mappedBy="customerId")
 	Contract contract;
+	
+	//@OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL,mappedBy="customer")
+	//@JoinColumn(name="customerId")
+	//List<Orders> order;
+	
+	
 	public Customer() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 	public Customer(String customerId, String customerPassword, String customerName, String customerEmail,
-			String customerAddress, String customerTown, String customerPostalCode, String customerContact) {
+			String customerAddress, String customerTown, String customerPostalCode, String customerContact ) {
 		//super(customerName,customerPassword,"customer");
 		this.customerId = customerId;
 		this.customerPassword = customerPassword;
@@ -54,6 +68,7 @@ public class Customer{
 		this.customerTown = customerTown;
 		this.customerPostalCode = customerPostalCode;
 		this.customerContact = customerContact;
+		//this.order=order;
 	}
 	public String getCustomerId() {
 		return customerId;

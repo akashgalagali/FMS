@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cg.fms.Exceptions.NoDataFoundException;
+
 import com.cg.fms.dto.Land;
 import com.cg.fms.service.LandServiceImpl;
 
@@ -37,11 +39,15 @@ public class LandController {
 		return new ResponseEntity<List<Land>>(landservice.getAllLands(),HttpStatus.OK);
 	}
 	@GetMapping(value="/{survey_no}",produces="application/json")
-	public Optional<Land> getLand(@PathVariable("survey_no")String surveyno){
+	public ResponseEntity<Optional<Land>> getLand(@PathVariable("survey_no")String surveyno){
 		Optional<Land> l=null; 
 		l=landservice.getLand(surveyno);
 		System.out.println(l.toString());
-		return l;
+		if(l.isPresent()) {
+    		return new ResponseEntity<Optional<Land>>(l,HttpStatus.OK);
+    	}
+    	else 
+    		throw new NoDataFoundException("No Land data found with given Land ID: "+ surveyno);
 	}
 	@PostMapping(consumes="application/json")
 	public ResponseEntity<HttpStatus> addLand(@RequestBody Land land) {
@@ -55,7 +61,14 @@ public class LandController {
 	}
 	@DeleteMapping(value="/{contract_no}")
 	public ResponseEntity<HttpStatus> deleteLand(@PathVariable("survey_no")String surveyno){
-		landservice.removeLandDetails(surveyno);
-		return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+		Optional<Land> l=null; 
+		l=landservice.getLand(surveyno);
+		if(l.isPresent()) {
+			landservice.removeLandDetails(surveyno);
+			return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+    	}
+    	else 
+    		throw new NoDataFoundException("No Land data found with given Land ID: "+ surveyno);
+		
 	}
 }

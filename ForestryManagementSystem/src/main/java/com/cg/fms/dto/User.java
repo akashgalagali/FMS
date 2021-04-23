@@ -16,7 +16,7 @@ import javax.persistence.Table;
 //}
 //@Inheritance(strategy = InheritanceType.JOINED)
 @Entity
-@Table(name="uesrs")
+@Table(name="users")
 public class User {
 	@Id
 	@Column(name="user_name")

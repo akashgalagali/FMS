@@ -22,9 +22,10 @@ public class Product{
 	private String productQuantity;
 	@Column(name="product_description")
 	private String productDescription;
+	
 	@OneToOne(mappedBy="productId")
 	Orders order;
-	@OneToOne(mappedBy="customerId")
+	@OneToOne(mappedBy="productId")
 	Contract contract;
 	public Product() {
 		super();

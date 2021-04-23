@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cg.fms.Exceptions.NoDataFoundException;
 import com.cg.fms.dto.Admin;
 import com.cg.fms.service.IAdminServiceImpl;
 
@@ -27,21 +28,27 @@ public class IAdminController {
 	public IAdminServiceImpl geIAdminService() {
 		return adminService;
 	}
-
+	
 	public void setAdminService(IAdminServiceImpl adminService) {
 		this.adminService = adminService;
 	}
+	
 	@GetMapping(value="/all",produces="application/json")
 	public ResponseEntity<List<Admin>> getAllAdmin(){
 		System.out.println("it worked");
 		return new ResponseEntity<List<Admin>>(adminService.getAllAdmins(),HttpStatus.OK);
 	}
 	@GetMapping(value="/{adminid}",produces="application/json")
-	public Optional<Admin> getAdmin(@PathVariable("adminid")String adminid){
+	public ResponseEntity<Optional<Admin>> getAdmin(@PathVariable("adminid")String adminid){
 		Optional<Admin> a=null; 
 		a=adminService.getAdmin(adminid);
 		System.out.println(a.toString());
-		return a;
+		if(a.isPresent()) {
+			return new ResponseEntity<Optional<Admin>>(a,HttpStatus.OK);
+		}
+		else 
+			throw new NoDataFoundException("No Admin data found with given Admin ID: "+ adminid);
+    	
 	}
 	@PostMapping(consumes="application/json")
 	public ResponseEntity<HttpStatus> addAdmin(@RequestBody Admin admin) {
@@ -55,8 +62,17 @@ public class IAdminController {
 	}
 	@DeleteMapping(value="/{adminid}")
 	public ResponseEntity<HttpStatus> deleteOrder(@PathVariable("adminid")String adminid){
-		adminService.deleteAdmin(adminid);
-		return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+		Optional<Admin> a=null; 
+		a=adminService.getAdmin(adminid);
+		System.out.println(a.toString());
+		if(a.isPresent()) {
+			
+			adminService.deleteAdmin(adminid);
+			return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+		}
+		else 
+			throw new NoDataFoundException("No Admin data found with given Admin ID: "+ adminid);
+
 	}
 
 }

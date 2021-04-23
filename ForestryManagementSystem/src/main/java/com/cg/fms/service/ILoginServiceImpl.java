@@ -15,9 +15,8 @@ public class ILoginServiceImpl implements ILoginService{
 	public Optional<User> login(String username, String password) {
 		Optional<User> user=ldao.findById(username);
 		if(user.get().getUserName().equals(username)&&user.get().getPassword().equals(password)) {
-			return user;
+				return user;
 		}
-		
 		return null;
 	}
 

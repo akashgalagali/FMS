@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cg.fms.Exceptions.NoDataFoundException;
+
 import com.cg.fms.dto.Orders;
 import com.cg.fms.service.OrderServiceImpl;
 
@@ -36,11 +38,15 @@ public class OrderController {
 		return new ResponseEntity<List<Orders>>(orderService.getAllOrders(),HttpStatus.OK);
 	}
 	@GetMapping(value="/{ordid}",produces="application/json")
-	public Optional<Orders> getOrder(@PathVariable("ordid")String ordid){
+	public ResponseEntity<Optional<Orders>> getOrder(@PathVariable("ordid")String ordid){
 		Optional<Orders> o=null; 
 		o=orderService.getOrder(ordid);
 		System.out.println(o.toString());
-		return o;
+		if(o.isPresent()) {
+    		return new ResponseEntity<Optional<Orders>>(o,HttpStatus.OK);
+    	}
+    	else 
+    		throw new NoDataFoundException("No Order data found with given Order ID: "+ ordid);
 	}
 	@PostMapping(consumes="application/json")
 	public ResponseEntity<HttpStatus> addOrder(@RequestBody Orders odd) {
@@ -54,8 +60,15 @@ public class OrderController {
 	}
 	@DeleteMapping(value="/{ordid}")
 	public ResponseEntity<HttpStatus> deleteOrder(@PathVariable("ordid")String ordid){
-		orderService.deleteOrder(ordid);
-		return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+		Optional<Orders> o=null; 
+		o=orderService.getOrder(ordid);
+		if(o.isPresent()) {
+			orderService.deleteOrder(ordid);
+			return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+    	}
+    	else 
+    		throw new NoDataFoundException("No Order data found with given Order ID: "+ ordid);
+	
 	}
 
 }

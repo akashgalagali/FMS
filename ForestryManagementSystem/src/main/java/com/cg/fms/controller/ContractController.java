@@ -1,6 +1,7 @@
 package com.cg.fms.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cg.fms.Exceptions.NoDataFoundException;
 import com.cg.fms.dto.Contract;
 
 import com.cg.fms.service.ContractServiceImpl;
@@ -38,9 +40,13 @@ public ResponseEntity<List<Contract>> getAllContracts(){
 	return new ResponseEntity<List<Contract>>(contractService.getAllContracts(),HttpStatus.OK);
 }
 @GetMapping(value="/{contractid}",produces="application/json")
-public Contract getContract(@PathVariable("contractid")String contractid){
-	Contract c= contractService.getContract(contractid);
-	return c;
+public Optional<Contract> getContract(@PathVariable("contractid")String contractid){
+	Optional<Contract> c= contractService.getContract(contractid);
+	if(c.isPresent())
+		return c;
+	else 
+		throw new NoDataFoundException("No Contract found with given Contract ID: "+ contractid);
+	
 }
 @PostMapping(consumes="application/json")
 public ResponseEntity<HttpStatus> addContract(@RequestBody Contract con) {
@@ -54,8 +60,14 @@ public ResponseEntity<HttpStatus> updateContract(@RequestBody Contract con) {
 }
 @DeleteMapping(value="/{conid}")
 public ResponseEntity<HttpStatus> deleteContract(@PathVariable("conid")String conid){
-	contractService.deleteContract(conid);
-	return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+	Optional<Contract> c=contractService.getContract(conid);
+	if(c.isPresent()) {
+		contractService.deleteContract(conid);
+		return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+	}
+	else {
+		throw new NoDataFoundException("No Contract found with given Contract ID: "+ conid+"Data can not be deleted ");
+	}
 }
 
 }

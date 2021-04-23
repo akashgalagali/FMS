@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cg.fms.Exceptions.NoDataFoundException;
+
 import com.cg.fms.dto.Scheduler;
 import com.cg.fms.service.SchedulerService;
 import com.cg.fms.service.SchedulerServiceImpl;
@@ -38,9 +40,15 @@ public class SchedulerController {
 		return new ResponseEntity<List<Scheduler>> (schedulerService.getAllSchedulers(),HttpStatus.OK);
 	}
 	
-	@GetMapping(value="/{customerId}",produces="application/json")
+	@GetMapping(value="/{schedulerId}",produces="application/json")
 	public ResponseEntity<Optional<Scheduler>> getScheduler(@PathVariable("schedulerId")String schedulerId){ 
-    	return new ResponseEntity<Optional<Scheduler>>(schedulerService.getScheduler(schedulerId),HttpStatus.OK);
+		Optional<Scheduler> s=schedulerService.getScheduler(schedulerId);
+		if(s.isPresent()) {
+			return new ResponseEntity<Optional<Scheduler>>(s,HttpStatus.OK);
+			}
+		else 
+			throw new NoDataFoundException("No Scheduler data found with given Scheduler ID: "+ schedulerId);
+
 	}
 	
 	@PostMapping(consumes="application/json")
@@ -58,7 +66,13 @@ public class SchedulerController {
 	@DeleteMapping(value="/{schedulerID}")
 	public ResponseEntity<HttpStatus> deleteScheduler(@PathVariable("schedulerID")String schedulerId)
 	{
-		schedulerService.deleteScheduler(schedulerId);
-		return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+		Optional<Scheduler> s=schedulerService.getScheduler(schedulerId);
+		if(s.isPresent()) {
+			schedulerService.deleteScheduler(schedulerId);
+			return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+			}
+		else 
+			throw new NoDataFoundException("No Scheduler data found with given Scheduler ID: "+ schedulerId);
+
 	}
 }

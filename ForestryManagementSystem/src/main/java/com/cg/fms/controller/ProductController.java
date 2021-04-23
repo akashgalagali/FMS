@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cg.fms.Exceptions.NoDataFoundException;
+
 import com.cg.fms.dto.Product;
 import com.cg.fms.service.ProductServiceImpl;
 
@@ -41,8 +43,13 @@ public class ProductController {
 	
 	@GetMapping(value="/{productId}",produces="application/json")
 	public ResponseEntity<Optional<Product>> getProduct(@PathVariable("productId")String productId)
-	{ 
-    	return new ResponseEntity<Optional<Product>>(productService.getProduct(productId),HttpStatus.OK);
+	{ 	Optional<Product> p=productService.getProduct(productId);
+		if(p.isPresent()) {
+			return new ResponseEntity<Optional<Product>>(p,HttpStatus.OK);
+		}
+		else 
+			throw new NoDataFoundException("No Product data found with given Product ID: "+ productId);
+    	
 	}
 
 	
@@ -62,10 +69,16 @@ public class ProductController {
 	}
 	
 	@DeleteMapping(value="/{productId}")
-	public ResponseEntity<HttpStatus> deleteEmlpoyee(@PathVariable("productId")String productId)
+	public ResponseEntity<HttpStatus> deleteProduct(@PathVariable("productId")String productId)
 	{
-		productService.deleteProduct(productId);
-		return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+		Optional<Product> p=productService.getProduct(productId);
+		if(p.isPresent()) {
+			productService.deleteProduct(productId);
+			return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+		}
+		else 
+			throw new NoDataFoundException("No Product data found with given Product ID: "+ productId);
+
 	}
 	
 }

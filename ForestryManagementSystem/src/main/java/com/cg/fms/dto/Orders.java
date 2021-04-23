@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -41,6 +42,12 @@ public class Orders{
 	@OneToOne
 	@JoinColumn(name="scheduler_id")
 	private Scheduler schedulerId;
+	
+	//@ManyToOne
+	//@JoinColumn(name="customerId")
+	//Customer customer;
+	
+	
 	public Orders() {}
 	public Orders(String orderNumber, String deliveryPlace,
 			String deliveryDate, String quantity) {
@@ -57,6 +64,7 @@ public class Orders{
 		this.orderNumber = orderNumber;
 		this.contractNumber = contract;
 		this.customerId = customer;
+		//this.customer = customer;
 		this.productId = product;
 		this.deliveryPlace = deliveryPlace;
 		this.deliveryDate = deliveryDate;
@@ -81,6 +89,14 @@ public class Orders{
 	public void setCustomer(Customer customer) {
 		this.customerId = customer;
 	}
+
+/*	public Customer getCustomer() {
+	return customer;
+}
+public void setCustomer(Customer customer) {
+	this.customer = customer;
+}
+*/	
 	public Product getProduct() {
 		return productId;
 	}
@@ -115,7 +131,7 @@ public class Orders{
 	public String toString() {
 		return "Orders [orderNumber=" + orderNumber + ", product="
 				+ productId + ", deliveryPlace=" + deliveryPlace + ", deliveryDate=" + deliveryDate + ", quantity="
-				+ quantity + ", scheduler=" + schedulerId +"customer"+customerId+"Contract"+contractNumber +"]";
+				+ quantity + ", scheduler=" + schedulerId +"Contract"+contractNumber+"Customer "+customerId +"]";
 	}
 	
 }

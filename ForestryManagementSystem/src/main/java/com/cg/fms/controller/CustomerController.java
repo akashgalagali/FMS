@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cg.fms.Exceptions.NoDataFoundException;
 import com.cg.fms.dto.Customer;
 import com.cg.fms.service.CustomerServiceImpl;
 @RestController
@@ -39,7 +40,14 @@ public class CustomerController {
 	
 	@GetMapping(value="/{customerId}",produces="application/json")
 	public ResponseEntity<Optional<Customer>> getCustomer(@PathVariable("customerId")String custId){ 
-    	return new ResponseEntity<Optional<Customer>>(customerService.serviceGetCustomer(custId),HttpStatus.OK);
+    	Optional<Customer> c= customerService.serviceGetCustomer(custId);
+    	if(c.isPresent()) {
+    		System.out.println(c);
+    		return new ResponseEntity<Optional<Customer>>(c,HttpStatus.OK);
+    	}
+    	else 
+    		throw new NoDataFoundException("No Customer found with given Customer ID: "+ custId);
+    	
 	}
 
 	
@@ -57,9 +65,13 @@ public class CustomerController {
 	}
 	
 	@DeleteMapping(value="/{customerId}")
-	public ResponseEntity<HttpStatus> deleteEmlpoyee(@PathVariable("customerId")String customerId)
-	{
-		customerService.serviceDeleteCustomer(customerId);
-		return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+	public ResponseEntity<HttpStatus> deleteCustomer(@PathVariable("customerId")String customerId)
+	{	Optional<Customer> c= customerService.serviceGetCustomer(customerId);
+		if(c.isPresent()) {
+			customerService.serviceDeleteCustomer(customerId);
+			return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+	}
+	else 
+		throw new NoDataFoundException("No Customer found with given Customer ID: "+ customerId+" Customer can not be deleted ");		
 	}
 }

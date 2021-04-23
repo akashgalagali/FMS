@@ -22,9 +22,10 @@ public class Scheduler  {
 	private String schedulerContact;
 	@Column(name="truck_number")
 	private String truckNumber;
+	
 	@OneToOne(mappedBy="schedulerId")
 	Orders order;
-	@OneToOne(mappedBy="customerId")
+	@OneToOne(mappedBy="schedulerId")
 	Contract contract;
 	public Scheduler() {
 		super();
